@@ -340,6 +340,8 @@
 
 <div id="admin-dashboard" class="fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50 p-4">
   <div class="bg-white rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col overflow-hidden" style="height:85vh;">
+    
+    <!-- 헤더 영역 -->
     <div class="bg-green-900 p-6 text-white flex justify-between items-center">
       <div>
         <h2 class="text-2xl font-bold flex items-center gap-2">
@@ -352,6 +354,8 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
+
+    <!-- 요약 및 버튼 영역 -->
     <div class="p-6 bg-gray-50 border-b border-gray-200 flex gap-4">
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex-1">
         <div class="text-sm text-gray-500 font-bold mb-1">총 주문 수</div>
@@ -365,6 +369,8 @@
         <div class="text-xs text-gray-400 text-center mt-2">Google Apps Script Webhook 연동</div>
       </div>
     </div>
+
+    <!-- 주문 목록 테이블 영역 -->
     <div class="flex-1 overflow-auto p-6">
       <table class="w-full text-left border-collapse">
         <thead>
@@ -374,10 +380,31 @@
             <th class="py-3 px-4 font-bold text-gray-700 bg-gray-50">주문 음료</th>
             <th class="py-3 px-4 font-bold text-gray-700 bg-gray-50">추가 메모</th>
             <th class="py-3 px-4 font-bold text-gray-700 bg-gray-50">주문 시간</th>
+            <!-- 삭제 헤더 추가 -->
+            <th class="py-3 px-4 font-bold text-gray-700 bg-gray-50 text-center">삭제</th>
           </tr>
         </thead>
         <tbody id="admin-table-body">
-          <tr><td colspan="5" class="py-12 text-center text-gray-400">아직 접수된 주문이 없습니다.</td></tr>
+          <!-- 변경: 열 갯수가 6개로 늘어났으므로 colspan을 5에서 6으로 변경 -->
+          <tr><td colspan="6" class="py-12 text-center text-gray-400">아직 접수된 주문이 없습니다.</td></tr>
+          
+          <!-- 자바스크립트로 데이터가 추가될 때 아래 형식으로 추가되게 됩니다 (디자인 참고용 예시 데이터) -->
+          <!--
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            <td class="py-3 px-4 text-gray-600">1</td>
+            <td class="py-3 px-4 text-gray-800 font-medium">홍길동</td>
+            <td class="py-3 px-4 text-gray-800">아이스 아메리카노</td>
+            <td class="py-3 px-4 text-gray-500 text-sm">연하게 부탁드려요</td>
+            <td class="py-3 px-4 text-gray-500 text-sm">13:15</td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="deleteOrder(1)" class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="주문 삭제">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+          -->
         </tbody>
       </table>
     </div>
