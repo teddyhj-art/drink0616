@@ -91,7 +91,34 @@
         })
         .subscribe();
     }
+window.deleteOrder = async function(orderId) {
+  // 1. 실수로 누를 것을 대비해 알림창 띄우기
+  if (!confirm('정말 이 주문을 삭제하시겠습니까?')) {
+    return; // 취소를 누르면 여기서 멈춤
+  }
 
+  try {
+    // 2. Supabase(데이터베이스)에서 해당 주문 삭제
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', orderId);
+
+    if (error) throw error;
+
+    // 3. 성공 알림 띄우기
+    showModal('주문이 성공적으로 삭제되었습니다.');
+
+    // 4. 삭제된 내역을 화면에 반영하기 위해 1.5초 뒤 페이지 새로고침
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+
+  } catch (e) {
+    console.error(e);
+    showModal('삭제 중 오류가 발생했습니다.');
+  }
+};
     // ====== 메뉴 렌더링 ======
     function renderMenu() {
       const container = document.getElementById('menu-container');
