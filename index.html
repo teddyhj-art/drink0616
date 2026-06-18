@@ -22,11 +22,11 @@
 const categories = ['커피', '시그니처 라떼', '티(Tea)'];
 const beverages = [
   // 커피
-  { id: 'americano',     category: '커피', name: '아메리카노', description: '갈증 해소, 일상에 활력을 불어 넣어 줄 읍천리 아메리카노', price: '3,500원' },
-  { id: 'coldbrew',      category: '커피', name: '콜드브루(디카페인)', description: '(ONLY ICE) 읍천리만의 특별한 추출 방식으로 맛과 향이 특별한 커피', price: '4,800원' },
-  { id: 'coldbrewlatte', category: '커피', name: '콜드브루라떼(디카페인)', description: '(ONLY ICE) 읍천리만의 특별한 추출 방식으로 맛과 향이 특별한 커피', price: '4,000원' }, // id 수정됨
-  { id: 'cafelatte',     category: '커피', name: '카페라떼', description: '읍천리 원두와 고소한 우유의 만남으로 부드럽게 즐기는 음료', price: '4,000원' },
-  { id: 'vanillabean',   category: '커피', name: '바닐라빈라떼', description: '읍천리 바닐라라떼의 리뉴얼 상품! 더욱 깊어진 풍미', price: '4,900원' },
+  { id: 'americano',     category: '커피', name: '아메리카노', description: '갈증 해소, 일상에 활력을 불어 넣어 줄 아메리카노', price: '3,500원' },
+  { id: 'coldbrew',      category: '커피', name: '콜드브루(디카페인)', description: '(ONLY ICE) 콜드브루 방식으로 맛과 향이 특별한 디카페인 아메리카노', price: '4,800원' },
+  { id: 'coldbrewlatte', category: '커피', name: '콜드브루라떼(디카페인)', description: '(ONLY ICE) 콜드브루 추출 방식으로 맛과 향이 특별한 디카페인 라떼', price: '4,000원' }, // id 수정됨
+  { id: 'cafelatte',     category: '커피', name: '카페라떼', description: '원두와 고소한 우유의 만남으로 부드럽게 즐기는 음료', price: '4,000원' },
+  { id: 'vanillabean',   category: '커피', name: '바닐라빈라떼', description: '바닐라라떼의 리뉴얼 상품! 더욱 깊어진 풍미', price: '4,900원' },
   { id: 'hazelnutlatte', category: '커피', name: '헤이즐넛라떼', description: '헤이즐넛 풍미가 감미롭게 어우러진 라떼', price: '5,000원' },
 
   // 시그니처 라떼
@@ -36,9 +36,9 @@ const beverages = [
   { id: 'misugaru',        category: '시그니처 라떼', name: '미숫가루', description: '가장 한국적인 것이 가장 세계적인 것이다. 든든한 시골 할매 황금믹스', price: '4,500원' },
 
   // 티(Tea) 및 에이드 (이하 동일)
-  { id: 'chamomile',      category: '티(Tea)', name: '캐모마일 티', description: '(ONLY HOT)더욱더 보완되어 다시 돌아온 읍천리만의 깔끔한 허브티', price: '4,000원' },
+  { id: 'chamomile',      category: '티(Tea)', name: '캐모마일 티', description: '(ONLY HOT)더욱더 보완되어 다시 돌아온 깔끔한 허브티', price: '4,000원' },
   { id: 'applepeach',     category: '티(Tea)', name: '애플피치우롱티', description: '사과와 복숭아 맛이 가미되어 우롱차의 깊은 맛과 환상적인 밸런스', price: '4,500원' },
-  { id: 'ssanghwatea',    category: '티(Tea)', name: '쌍화차', description: '(ONLY HOT)피로 회복과 면역력 강화, 기운을 북돋아줄 읍천리 한방 쌍화차', price: '4,900원' },
+  { id: 'ssanghwatea',    category: '티(Tea)', name: '쌍화차', description: '(ONLY HOT)피로 회복과 면역력 강화, 기운을 북돋아줄 한방 쌍화차', price: '4,900원' },
   { id: 'grapefruitade',  category: '티(Tea)', name: '매실에이드', description: '한입 먹는 순간 청량함과 싱그러움이 한번에 느껴지는 시골에서 만나볼 수 있는 특유의 에이드', price: '4,900원' },
   { id: 'greengrapeade',  category: '티(Tea)', name: '청포도에이드', description: '청포도의 달콤하고 상큼한 맛이 느껴지는 에이드', price: '4,900원' },
   { id: 'pomegranateade', category: '티(Tea)', name: '석류 에이드', description: '새콤달콤하고 색감이 아주 이쁜 석류 에이드', price: '4,900원' }
@@ -407,7 +407,7 @@ const beverages = [
     </div>
     <div class="mb-6">
       <label class="block text-sm font-bold text-gray-700 mb-2">비밀번호 입력</label>
-      <input type="password" id="admin-password" placeholder="비밀번호(2026)를 입력하세요"
+      <input type="password" id="admin-password" placeholder="비밀번호를 입력하세요"
         class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:border-green-900 focus:ring-1 focus:outline-none"
         onkeydown="if(event.key==='Enter') handleAdminLogin()" />
     </div>
@@ -422,12 +422,12 @@ const beverages = [
     <div>
       <h1 class="text-sm font-bold tracking-widest mb-4 opacity-90 text-amber-200">TEACHER WORKSHOP ORDER KIT</h1>
       <div class="text-5xl md:text-6xl font-extrabold text-white mb-4 tracking-tight leading-tight select-none">
-        읍천리<br />
-        <span class="text-amber-300 text-4xl md:text-5xl tracking-normal border-b-4 border-amber-300/50 pb-1 mt-1 inline-block">382</span>
+        치평중학교<br />
+        <span class="text-amber-300 text-4xl md:text-5xl tracking-normal border-b-4 border-amber-300/50 pb-1 mt-1 inline-block">MENU</span>
       </div>
       <p class="text-base text-white/95 mt-10 font-medium leading-relaxed italic antialiased select-none">
-        도심 속의 시골,<br />
-        선생님들을 위한 따뜻한 한 잔 🥤
+        지친하루,<br />
+        선생님들을 위한 여유로운 한 잔 🥤
       </p>
     </div>
     <div class="mt-12 md:mt-0">
@@ -459,8 +459,8 @@ const beverages = [
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
           <h2 class="text-sm font-bold text-green-800 tracking-widest mb-2">BEVERAGE ORDERING MODE</h2>
-          <h1 class="text-4xl font-extrabold text-gray-900 mb-2">MENU</h1>
-          <p class="text-gray-600">선생님들께서는 성함과 원하시는 메뉴를 지정해 주세요.</p>
+          <h1 class="text-4xl font-extrabold text-gray-900 mb-2">주문</h1>
+          <p class="text-gray-600">선생님들께서는 성함과 원하시는 메뉴를 지정해 주세요. 6.19일 퇴근전까지 메뉴변경 가능합니다</p>
         </div>
         <a href="https://naver.me/GfrB3nZY" target="_blank" rel="noopener noreferrer"
           class="flex items-center space-x-2 text-sm font-bold text-green-900 bg-white border border-green-900 px-4 py-2 rounded-full hover:bg-green-900 hover:text-white transition-colors w-fit shrink-0">
