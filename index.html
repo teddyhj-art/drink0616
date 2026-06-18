@@ -410,18 +410,23 @@ const beverages = [
     </div>
 
     <div class="p-6 bg-gray-50 border-b border-gray-200 flex gap-4">
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex-1">
-        <div class="text-sm text-gray-500 font-bold mb-1">총 주문 수</div>
-        <div class="text-3xl font-extrabold text-green-900"><span id="order-count">0</span><span class="text-lg text-gray-600 font-medium ml-1">잔</span></div>
-      </div>
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex-1 flex flex-col justify-center">
-        <button id="send-sheets-btn" onclick="sendToSheets()"
-          class="w-full py-3 px-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors bg-green-600 hover:bg-green-700 text-white shadow-md">
-          구글 시트로 보내기
-        </button>
-        <div class="text-xs text-gray-400 text-center mt-2">Google Apps Script Webhook 연동</div>
-      </div>
-    </div>
+  <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex-1">
+    <div class="text-sm text-gray-500 font-bold mb-1">총 주문 수</div>
+    <div class="text-3xl font-extrabold text-green-900"><span id="order-count">0</span><span class="text-lg text-gray-600 font-medium ml-1">잔</span></div>
+  </div>
+
+  <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex-1 flex flex-col justify-center gap-2">
+    <button id="send-sheets-btn" onclick="sendToSheets()"
+      class="w-full py-2 px-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors bg-green-700 hover:bg-green-800 text-white shadow-md text-sm">
+      구글 시트로 데이터 업데이트
+    </button>
+    
+    <a href="여기에_본인의_구글시트_공유링크를_붙여넣으세요" target="_blank"
+      class="w-full py-2 px-4 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors bg-blue-600 hover:bg-blue-700 text-white shadow-md text-sm">
+      전체 주문 현황 확인하기
+    </a>
+  </div>
+</div>
 
     <div class="flex-1 overflow-auto p-6">
       <table class="w-full text-left border-collapse">
