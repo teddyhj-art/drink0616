@@ -39,7 +39,6 @@ const beverages = [
   { id: 'grapefruitade', category: '티(Tea)', name: '매실에이드', description: '한입 먹는 순간 청량함과 싱그러움이 한번에 느껴지는 시골에서 만나볼 수 있는 특유의 에이드', price: '4,900원' },
   { id: 'greengrapeade', category: '티(Tea)', name: '청포도에이드', description: '청포도의 달콤하고 상큼한 맛이 느껴지는 에이드', price: '4,900원' },
   { id: 'pomegranateade', category: '티(Tea)', name: '석류 에이드', description: '새콤달콤하고 색감이 아주 이쁜 석류 에이드', price: '4,900원' }
-  
 ];
 
     window._selectedBeverage = null;
@@ -96,7 +95,7 @@ const beverages = [
         .subscribe();
     }
 
-    // 삭제 기능 함수 (수정됨)
+    // 삭제 기능 함수
     window.deleteOrder = async function(orderId) {
       if (!confirm('정말 이 주문을 삭제하시겠습니까?')) {
         return;
@@ -116,8 +115,6 @@ const beverages = [
         if (error) throw error;
 
         showModal('주문이 성공적으로 삭제되었습니다.');
-        
-        // 삭제 후 화면의 데이터 표만 조용히 업데이트
         fetchOrders();
 
       } catch (e) {
@@ -171,7 +168,7 @@ const beverages = [
       });
     }
 
-    // ====== 관리자 테이블 그리기 (오류 수정됨) ======
+    // ====== 관리자 테이블 그리기 ======
     function renderAdminTable(orders) {
       document.getElementById('order-count').textContent = orders.length;
       const tbody = document.getElementById('admin-table-body');
@@ -208,6 +205,7 @@ const beverages = [
       document.getElementById('card-' + id).classList.add('selected');
     }
 
+    // ★ [수정완료] 중복체크 및 덮어쓰기(upsert) 기능 적용 파트 ★
     window.submitOrder = async function() {
       const teacherName = document.getElementById('teacherName').value.trim();
       const selectedBeverage = window._selectedBeverage;
@@ -217,14 +215,23 @@ const beverages = [
       if (!selectedBeverage) { showModal('음료를 선택해 주세요.'); return; }
       if (!supabase) { showModal('데이터베이스 연결 중입니다. 잠시 후 다시 시도해주세요.'); return; }
 
+      // 기존 주문 유무 확인 후 알림창 띄우기
+      const isAlreadyOrdered = window._orders.some(o => o.teacher_name === teacherName);
+      if (isAlreadyOrdered) {
+        if (!confirm(`[${teacherName}] 선생님의 기존 주문 내역이 이미 존재합니다.\n새로운 주문으로 변경(덮어쓰기)하시겠습니까?`)) {
+          return; // 취소 누르면 중단
+        }
+      }
+
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
       btn.innerHTML = `<svg class="animate-spin w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>주문 전송 중...`;
 
       try {
+        // insert 대신 upsert 사용 (동일 이름 충돌 시 데이터 덮어쓰기)
         const { error } = await supabase
           .from('orders')
-          .insert([
+          .upsert([
             {
               teacher_name: teacherName,
               beverage_name: selectedBeverage.name,
@@ -232,11 +239,11 @@ const beverages = [
               memo: memo || '',
               timestamp: Date.now()
             }
-          ]);
+          ], { onConflict: 'teacher_name' });
           
         if (error) throw error;
 
-        showModal(`[${teacherName}] 선생님,\n[${selectedBeverage.name}] 주문이 완료되었습니다!`);
+        showModal(`[${teacherName}] 선생님,\n[${selectedBeverage.name}] 주문이 성공적으로 저장되었습니다!`);
         document.getElementById('teacherName').value = '';
         document.getElementById('additionalMemo').value = '';
         window._selectedBeverage = null;
