@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> 음료 주문 </title>
+  <title> 치평중학교 교직원 연수 음료 주문 </title>
   <script src="https://cdn.tailwindcss.com"></script>
   
   <script type="module">
@@ -43,6 +43,7 @@
 
     window._selectedBeverage = null;
     window._orders = [];
+    window._isAdminAuthenticated = false; // 관리자 로그인 인증 여부
 
     // ====== 초기화 함수 ======
     function initApp() {
@@ -78,7 +79,7 @@
         console.error('데이터 불러오기 실패:', error);
       } else {
         window._orders = data;
-        renderOrderSummary(data); // 통계 및 테이블 갱신
+        renderOrderSummary(data); 
       }
     }
 
@@ -93,6 +94,31 @@
         })
         .subscribe();
     }
+
+    // ====== 삭제 기능 함수 (관리자 전용) ======
+    window.deleteOrder = async function(orderId) {
+      if (!window._isAdminAuthenticated) {
+        showModal('권한이 없습니다. 관리자 로그인을 먼저 진행해주세요.');
+        return;
+      }
+      if (!confirm('정말 이 주문을 삭제하시겠습니까?')) {
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .delete()
+          .eq('id', orderId);
+
+        if (error) throw error;
+        showModal('주문이 성공적으로 삭제되었습니다.');
+        fetchOrders();
+      } catch (e) {
+        console.error(e);
+        showModal('삭제 중 오류가 발생했습니다.');
+      }
+    };
 
     // ====== 메뉴 렌더링 ======
     function renderMenu() {
@@ -138,21 +164,17 @@
       });
     }
 
-    // ★ [수정 및 기능 추가] 실시간 통계, 금액 계산 및 테이블 그리기 ★
+    // ====== 실시간 통계, 금액 계산 및 테이블 그리기 (관리자 모드 대응 변형) ======
     function renderOrderSummary(orders) {
-      // 1. 총 주문 잔수 업데이트
       document.getElementById('order-count').textContent = orders.length;
 
-      // 2. 총액 및 메뉴별 개수 계산 로직
       let totalAmount = 0;
       const menuCounts = {};
 
       orders.forEach(o => {
-        // 가격 숫자로 변환 (예: "4,900원" -> 4900)
         const priceNum = parseInt(o.price.replace(/[^0-9]/g, ''), 10) || 0;
         totalAmount += priceNum;
 
-        // 메뉴별 카운트 집계
         if (menuCounts[o.beverage_name]) {
           menuCounts[o.beverage_name]++;
         } else {
@@ -160,10 +182,8 @@
         }
       });
 
-      // 총 금액 표시 수정
       document.getElementById('total-amount').textContent = totalAmount.toLocaleString('ko-KR') + '원';
 
-      // 메뉴별 요약 화면 그리기
       const summaryContainer = document.getElementById('menu-summary-container');
       if (orders.length === 0) {
         summaryContainer.innerHTML = '<p class="text-gray-400 text-sm py-2">주문된 메뉴가 없습니다.</p>';
@@ -176,10 +196,22 @@
         `).join('');
       }
 
-      // 3. 전체 명단 테이블 그리기
+      // 관리자 인증 여부에 따라 헤더 테이블 컬럼 동적 변경
+      const headerRow = document.getElementById('order-table-header');
+      headerRow.innerHTML = `
+        <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50 w-16">순번</th>
+        <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50 w-28">성함</th>
+        <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50">주문 음료</th>
+        <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50">추가 비고</th>
+        <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50 w-24">시간</th>
+        ${window._isAdminAuthenticated ? '<th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50 w-16 text-center">삭제</th>' : ''}
+      `;
+
       const tbody = document.getElementById('order-table-body');
+      const colspan = window._isAdminAuthenticated ? 6 : 5;
+      
       if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-gray-400">아직 접수된 주문이 없습니다.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="${colspan}" class="py-8 text-center text-gray-400">아직 접수된 주문이 없습니다.</td></tr>`;
         return;
       }
       
@@ -190,6 +222,15 @@
           <td class="py-3 px-4 text-green-900 font-medium">${o.beverage_name}</td>
           <td class="py-3 px-4 text-gray-600">${o.memo || '-'}</td>
           <td class="py-3 px-4 text-gray-400 text-sm">${new Date(o.timestamp).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})}</td>
+          ${window._isAdminAuthenticated ? `
+            <td class="py-3 px-4 text-center">
+              <button type="button" onclick="deleteOrder('${o.id}')" class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="주문 삭제">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </td>
+          ` : ''}
         </tr>
       `).join('');
     }
@@ -278,6 +319,36 @@
       document.body.removeChild(link);
     };
 
+    // ====== 관리자 로그인 모달 핸들러 ======
+    window.openAdminPage = function() {
+      if (window._isAdminAuthenticated) {
+        window._isAdminAuthenticated = false;
+        document.getElementById('admin-btn-text').textContent = '관리자 로그인';
+        renderOrderSummary(window._orders);
+        showModal('관리자 모드가 해제되었습니다.');
+      } else {
+        document.getElementById('admin-login-modal').classList.add('open');
+        setTimeout(() => document.getElementById('admin-password').focus(), 100);
+      }
+    }
+    window.closeAdminLogin = function() {
+      document.getElementById('admin-login-modal').classList.remove('open');
+      document.getElementById('admin-password').value = '';
+    }
+    window.handleAdminLogin = function() {
+      const pw = document.getElementById('admin-password').value;
+      if (pw === '2026') { // 요청하신 비밀번호 고정값
+        window._isAdminAuthenticated = true;
+        window.closeAdminLogin();
+        document.getElementById('admin-btn-text').textContent = '관리자 로그아웃';
+        renderOrderSummary(window._orders);
+        showModal('관리자 인증에 성공했습니다.\n현황판에서 휴지통 아이콘을 눌러 주문을 삭제할 수 있습니다.');
+      } else {
+        showModal('비밀번호가 일치하지 않습니다.');
+        document.getElementById('admin-password').value = '';
+      }
+    }
+
     function showModal(msg) {
       document.getElementById('modal-message').textContent = msg;
       document.getElementById('modal-overlay').classList.add('open');
@@ -304,6 +375,8 @@
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     #modal-overlay { display: none; }
     #modal-overlay.open { display: flex; }
+    #admin-login-modal { display: none; }
+    #admin-login-modal.open { display: flex; }
   </style>
 </head>
 
@@ -316,6 +389,29 @@
     </div>
     <h3 id="modal-message" class="text-xl font-bold text-gray-900 mb-2 whitespace-pre-wrap"></h3>
     <button onclick="closeModal()" class="mt-6 w-full bg-green-900 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition-colors">확인</button>
+  </div>
+</div>
+
+<div id="admin-login-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        관리자 인증
+      </h3>
+      <button onclick="closeAdminLogin()" class="text-gray-400 hover:text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="mb-6">
+      <label class="block text-sm font-bold text-gray-700 mb-2">비밀번호 입력</label>
+      <input type="password" id="admin-password" placeholder="비밀번호(2026)를 입력하세요"
+        class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:border-green-900 focus:ring-1 focus:outline-none"
+        onkeydown="if(event.key==='Enter') handleAdminLogin()" />
+    </div>
+    <button onclick="handleAdminLogin()" class="w-full bg-green-900 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition-colors">
+      인증하기
+    </button>
   </div>
 </div>
 
@@ -350,6 +446,14 @@
   <main class="flex-1 p-8 lg:p-12 overflow-y-auto">
     <div class="max-w-3xl mx-auto">
 
+      <div class="flex justify-end mb-4">
+        <button onclick="openAdminPage()"
+          class="flex items-center space-x-2 border border-gray-300 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:border-green-900 hover:text-green-900 transition-colors shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <span id="admin-btn-text">관리자 로그인</span>
+        </button>
+      </div>
+
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
           <h2 class="text-sm font-bold text-green-800 tracking-widest mb-2">BEVERAGE ORDERING MODE</h2>
@@ -358,7 +462,7 @@
         </div>
         <a href="https://naver.me/GfrB3nZY" target="_blank" rel="noopener noreferrer"
           class="flex items-center space-x-2 text-sm font-bold text-green-900 bg-white border border-green-900 px-4 py-2 rounded-full hover:bg-green-900 hover:text-white transition-colors w-fit shrink-0">
-          <span>공식 메뉴판 사진 보기</span>
+          <span>읍천리 382 메뉴판 보기</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
       </div>
@@ -425,13 +529,8 @@
           <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">👤 주문 교직원 명단</h3>
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="border-b-2 border-gray-200 text-sm">
-                <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50 w-16">순번</th>
-                <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50 w-28">성함</th>
-                <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50">주문 음료</th>
-                <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50">추가 비고</th>
-                <th class="py-2.5 px-4 font-bold text-gray-600 bg-gray-50/50 w-24">시간</th>
-              </tr>
+              <tr id="order-table-header" class="border-b-2 border-gray-200 text-sm">
+                </tr>
             </thead>
             <tbody id="order-table-body" class="text-sm">
               <tr><td colspan="5" class="py-8 text-center text-gray-400">아직 접수된 주문이 없습니다.</td></tr>
@@ -441,7 +540,7 @@
       </div>
 
       <div class="mt-12 text-center text-xs text-gray-400">
-        <p>치평중학교 교직원 연수 시스템 + POWERED BY SUPABASE</p>
+        <p>치평중학교 연수 시스템 + POWERED BY SUPABASE</p>
       </div>
     </div>
   </main>
