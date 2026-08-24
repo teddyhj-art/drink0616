@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> 교직원 연수 음료 주문</title>
+  <title>유달리 교직원 연수 음료 주문</title>
   <script src="https://cdn.tailwindcss.com"></script>
   
   <script type="module">
@@ -31,11 +31,11 @@
       try {
         supabase = createClient(supabaseUrl, supabaseKey);
         
-        // 연결 성공 시 UI 업데이트
-        document.getElementById('status-dot').className = 'w-3 h-3 rounded-full bg-#EF9099-400 animate-pulse shadow-[0_0_10px_#f43f5e]';
+        // 연결 성공 시 UI 업데이트 (핑크색 불빛)
+        document.getElementById('status-dot').className = 'w-3 h-3 rounded-full bg-white animate-pulse shadow-[0_0_10px_#ffffff]';
         document.getElementById('status-text').textContent = '정상 작동 중 (Supabase)';
         document.getElementById('submit-btn').classList.remove('bg-gray-400', 'cursor-not-allowed');
-        document.getElementById('submit-btn').classList.add('bg-#EF9099-600', 'hover:bg-#EF9099-700');
+        document.getElementById('submit-btn').classList.add('bg-[#EF9099]', 'hover:bg-[#d67e86]');
         
         fetchBeverages(); // 메뉴 데이터 불러오기
         subscribeOrders(); // 주문 데이터 동기화
@@ -118,7 +118,7 @@
               <p class="text-xs text-gray-500 leading-relaxed line-clamp-2">${b.description}</p>
             </div>
             <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
-              <span class="font-extrabold text-#EF9099-600">${b.price}</span>
+              <span class="font-extrabold text-[#EF9099]">${b.price}</span>
               ${window._isAdminAuthenticated ? `<button onclick="deleteBeverage('${b.id}', event)" class="text-xs text-red-500 hover:underline">삭제</button>` : ''}
             </div>
           </div>
@@ -126,8 +126,8 @@
 
         container.innerHTML += `
           <div class="mb-8">
-            <h3 class="text-#EF9099-700 font-bold text-lg mb-4 flex items-center">
-              <span class="w-2 h-2 bg-#EF9099-400 rounded-full mr-2 inline-block"></span>${cat}
+            <h3 class="text-[#EF9099] font-bold text-lg mb-4 flex items-center">
+              <span class="w-2 h-2 bg-[#EF9099] rounded-full mr-2 inline-block"></span>${cat}
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">${cardsHtml}</div>
           </div>
@@ -292,9 +292,9 @@
         summaryContainer.innerHTML = '<p class="text-gray-400 text-sm py-2">주문된 메뉴가 없습니다.</p>';
       } else {
         summaryContainer.innerHTML = Object.entries(menuCounts).map(([name, count]) => `
-          <div class="bg-#EF9099-50 border border-#EF9099-100 px-3 py-2 rounded-xl flex justify-between items-center text-sm shadow-sm">
+          <div class="bg-[#fdf2f3] border border-[#EF9099]/30 px-3 py-2 rounded-xl flex justify-between items-center text-sm shadow-sm">
             <span class="font-bold text-gray-800">${name}</span>
-            <span class="font-extrabold text-#EF9099-700 bg-white border border-#EF9099-200 px-2 py-0.5 rounded-md">${count}잔</span>
+            <span class="font-extrabold text-[#EF9099] bg-white border border-[#EF9099]/30 px-2 py-0.5 rounded-md">${count}잔</span>
           </div>
         `).join('');
       }
@@ -307,7 +307,7 @@
           <tr class="border-b border-gray-100 hover:bg-gray-50">
             <td class="py-3 px-4">${i + 1}</td>
             <td class="py-3 px-4 font-bold">${o.teacher_name}</td>
-            <td class="py-3 px-4 text-#EF9099-600 font-medium">${o.beverage_name}</td>
+            <td class="py-3 px-4 text-[#EF9099] font-medium">${o.beverage_name}</td>
             <td class="py-3 px-4 text-gray-600">${o.memo || '-'}</td>
             <td class="py-3 px-4 text-gray-400 text-sm">${new Date(o.timestamp).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})}</td>
             ${window._isAdminAuthenticated ? `<td class="py-3 px-4 text-center"><button onclick="deleteOrder('${o.id}')" class="text-red-500 text-xs">삭제</button></td>` : '<td></td>'}
@@ -358,9 +358,12 @@
   <style>
     body { font-family: 'Noto Sans KR', sans-serif; }
     .beverage-card { cursor: pointer; border: 2px solid #f3f4f6; transition: all 0.2s; }
-    .beverage-card:hover { border-color: #fda4af; } /* hover 시 연한 핑크 */
-    .beverage-card.selected { border-color: #e11d48; background-color: #fff1f2; box-shadow: 0 0 0 1px #e11d48; } /* 선택 시 진한 로즈 */
-    .beverage-card.selected .check-circle { background-color: #e11d48; border-color: #e11d48; }
+    
+    /* 🎨 선택 및 호버 색상을 #EF9099(딸기우유 핑크)로 완벽 교체 */
+    .beverage-card:hover { border-color: #EF9099; } 
+    .beverage-card.selected { border-color: #EF9099; background-color: #fdf2f3; box-shadow: 0 0 0 1px #EF9099; } 
+    .beverage-card.selected .check-circle { background-color: #EF9099; border-color: #EF9099; }
+    
     .beverage-card.selected .check-icon { display: block; }
     .check-icon { display: none; }
     #modal-overlay, #admin-login-modal, #menu-add-modal { display: none; }
@@ -372,9 +375,9 @@
 
 <!-- 공통 메시지 모달 -->
 <div id="modal-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center z-[100] p-4">
-  <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center border-t-4 border-#EF9099-600">
+  <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center border-t-4 border-[#EF9099]">
     <h3 id="modal-message" class="text-xl font-bold text-gray-900 mb-6 whitespace-pre-wrap"></h3>
-    <button onclick="closeModal()" class="w-full bg-#EF9099-600 text-white py-3 rounded-lg font-bold hover:bg-#EF9099-700">확인</button>
+    <button onclick="closeModal()" class="w-full bg-[#EF9099] text-white py-3 rounded-lg font-bold hover:bg-[#d67e86]">확인</button>
   </div>
 </div>
 
@@ -382,11 +385,11 @@
 <div id="admin-login-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center z-50 p-4">
   <div class="bg-white rounded-2xl p-8 max-w-sm w-full">
     <div class="flex justify-between items-center mb-6">
-      <h3 class="text-xl font-bold text-#EF9099-700">관리자 인증</h3>
+      <h3 class="text-xl font-bold text-[#EF9099]">관리자 인증</h3>
       <button onclick="closeAdminLogin()" class="text-gray-400 hover:text-gray-600">X</button>
     </div>
-    <input type="password" id="admin-password" placeholder="비밀번호(2026)" class="w-full border rounded-lg py-3 px-4 mb-4" onkeydown="if(event.key==='Enter') handleAdminLogin()" />
-    <button onclick="handleAdminLogin()" class="w-full bg-#EF9099-600 text-white py-3 rounded-lg font-bold">인증하기</button>
+    <input type="password" id="admin-password" placeholder="비밀번호(2026)" class="w-full border rounded-lg py-3 px-4 mb-4 focus:outline-none focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099]" onkeydown="if(event.key==='Enter') handleAdminLogin()" />
+    <button onclick="handleAdminLogin()" class="w-full bg-[#EF9099] text-white py-3 rounded-lg font-bold hover:bg-[#d67e86]">인증하기</button>
   </div>
 </div>
 
@@ -394,38 +397,38 @@
 <div id="menu-add-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-[70] p-4">
   <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
     <div class="flex justify-between items-center mb-4 border-b pb-2">
-      <h3 class="text-xl font-bold text-#EF9099-700">✨ 새 메뉴 추가하기</h3>
-      <button onclick="closeMenuModal()" class="text-gray-400 font-bold">X</button>
+      <h3 class="text-xl font-bold text-[#EF9099]">✨ 새 메뉴 추가하기</h3>
+      <button onclick="closeMenuModal()" class="text-gray-400 font-bold hover:text-[#EF9099]">X</button>
     </div>
     <form id="menu-form" onsubmit="handleAddMenu(event)" class="space-y-4">
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">카테고리</label>
-        <input type="text" id="menu-category" placeholder="예: 생과일주스, 커피, 디저트" required class="w-full border rounded-lg p-2 bg-gray-50">
+        <input type="text" id="menu-category" placeholder="예: 생과일주스, 커피, 디저트" required class="w-full border rounded-lg p-2 bg-gray-50 focus:outline-none focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099]">
       </div>
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">메뉴 이름</label>
-        <input type="text" id="menu-name" placeholder="예: 딸기바나나쥬스" required class="w-full border rounded-lg p-2 bg-gray-50">
+        <input type="text" id="menu-name" placeholder="예: 딸기바나나쥬스" required class="w-full border rounded-lg p-2 bg-gray-50 focus:outline-none focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099]">
       </div>
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">가격</label>
-        <input type="text" id="menu-price" placeholder="예: 6,000원" required class="w-full border rounded-lg p-2 bg-gray-50">
+        <input type="text" id="menu-price" placeholder="예: 6,000원" required class="w-full border rounded-lg p-2 bg-gray-50 focus:outline-none focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099]">
       </div>
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">메뉴 설명</label>
-        <input type="text" id="menu-desc" placeholder="예: 상큼달콤 유달리 베스트 메뉴!" class="w-full border rounded-lg p-2 bg-gray-50">
+        <input type="text" id="menu-desc" placeholder="예: 상큼달콤 유달리 베스트 메뉴!" class="w-full border rounded-lg p-2 bg-gray-50 focus:outline-none focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099]">
       </div>
       <div>
         <label class="block text-sm font-bold text-gray-700 mb-1">음료 사진 (선택사항)</label>
-        <input type="file" id="menu-image" accept="image/*" class="w-full border rounded-lg p-2 bg-gray-50 text-sm">
+        <input type="file" id="menu-image" accept="image/*" class="w-full border rounded-lg p-2 bg-gray-50 text-sm focus:outline-none focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099]">
       </div>
-      <button type="submit" id="menu-submit-btn" class="w-full bg-#EF9099-600 text-white py-3 rounded-lg font-bold hover:bg-#EF9099-700 mt-2">메뉴 등록하기</button>
+      <button type="submit" id="menu-submit-btn" class="w-full bg-[#EF9099] text-white py-3 rounded-lg font-bold hover:bg-[#d67e86] mt-2 transition-colors">메뉴 등록하기</button>
     </form>
   </div>
 </div>
 
 <div class="flex flex-col md:flex-row min-h-screen">
-  <!-- 사이드바 (유달리 테마 로즈 컬러) -->
- <aside class="w-full md:w-1/3 lg:w-1/4 bg-[#EF9099] text-white ...">
+  <!-- 사이드바 (딸기우유 핑크 컬러로 변경!) -->
+  <aside class="w-full md:w-1/3 lg:w-1/4 bg-[#EF9099] text-white p-8 flex flex-col justify-between shadow-xl">
     <div>
       <h1 class="text-sm font-bold tracking-widest mb-4 opacity-90 text-yellow-200">TEACHER WORKSHOP ORDER KIT</h1>
       <div class="text-5xl md:text-6xl font-extrabold text-white mb-4 tracking-tight leading-tight select-none">
@@ -438,12 +441,12 @@
       </p>
     </div>
     <div class="mt-12 md:mt-0">
-      <div class="bg-#EF9099-700 rounded-xl p-4 flex items-center justify-between shadow-inner">
+      <div class="bg-[#d67e86] rounded-xl p-4 flex items-center justify-between shadow-inner">
         <div>
           <div class="font-bold text-white">데이터베이스 상태</div>
-          <div id="status-text" class="text-xs text-#EF9099-200 mt-1">연결 중...</div>
+          <div id="status-text" class="text-xs text-white/80 mt-1">연결 중...</div>
         </div>
-        <div id="status-dot" class="w-3 h-3 rounded-full bg-gray-400"></div>
+        <div id="status-dot" class="w-3 h-3 rounded-full bg-gray-300"></div>
       </div>
     </div>
   </aside>
@@ -454,11 +457,11 @@
       <!-- 상단 버튼들 -->
       <div class="flex justify-end mb-4 gap-2">
         <button id="admin-menu-btn" onclick="openMenuModal()" style="display: none;"
-          class="flex items-center space-x-2 border border-#EF9099-600 bg-#EF9099-50 rounded-full px-4 py-1.5 text-xs font-bold text-#EF9099-700 hover:bg-#EF9099-600 hover:text-white transition-colors shadow-sm">
+          class="flex items-center space-x-2 border border-[#EF9099] bg-[#fdf2f3] rounded-full px-4 py-1.5 text-xs font-bold text-[#EF9099] hover:bg-[#EF9099] hover:text-white transition-colors shadow-sm">
           <span>+ 메뉴 추가하기</span>
         </button>
         <button onclick="openAdminPage()"
-          class="flex items-center space-x-2 border border-gray-300 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:border-#EF9099-600 hover:text-#EF9099-600 transition-colors shadow-sm">
+          class="flex items-center space-x-2 border border-gray-300 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:border-[#EF9099] hover:text-[#EF9099] transition-colors shadow-sm">
           <span id="admin-btn-text">관리자 로그인</span>
         </button>
       </div>
@@ -470,21 +473,21 @@
         </div>
         <!-- 네이버 유달리 메뉴 링크 -->
         <a href="https://m.place.naver.com/restaurant/42207711/menu/list" target="_blank" rel="noopener noreferrer"
-          class="flex items-center space-x-2 text-sm font-bold text-#EF9099-600 bg-white border border-#EF9099-600 px-4 py-2 rounded-full hover:bg-#EF9099-600 hover:text-white transition-colors shrink-0">
+          class="flex items-center space-x-2 text-sm font-bold text-[#EF9099] bg-white border border-[#EF9099] px-4 py-2 rounded-full hover:bg-[#EF9099] hover:text-white transition-colors shrink-0">
           <span>유달리 메뉴판 보기</span>
         </a>
       </div>
 
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-10 flex flex-col gap-6">
         <div>
-          <label class="block text-sm font-bold text-#EF9099-700 mb-2">👤 선생님 성함 <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-bold text-[#EF9099] mb-2">👤 선생님 성함 <span class="text-red-500">*</span></label>
           <input type="text" id="teacherName" placeholder="예: 홍길동" autocomplete="off"
-            class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:border-#EF9099-500 focus:ring-1 focus:outline-none bg-gray-50 transition-colors" />
+            class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099] focus:outline-none bg-gray-50 transition-colors" />
         </div>
         <div>
-          <label class="block text-sm font-bold text-#EF9099-700 mb-2">💬 비고 (HOT / ICE / 시럽추가 등)</label>
+          <label class="block text-sm font-bold text-[#EF9099] mb-2">💬 비고 (HOT / ICE / 시럽추가 등)</label>
           <input type="text" id="additionalMemo" placeholder="선택사항을 입력해주세요" autocomplete="off"
-            class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:border-#EF9099-500 focus:ring-1 focus:outline-none bg-gray-50 transition-colors text-sm" />
+            class="w-full border border-gray-300 rounded-lg py-3 px-4 focus:border-[#EF9099] focus:ring-1 focus:ring-[#EF9099] focus:outline-none bg-gray-50 transition-colors text-sm" />
         </div>
       </div>
 
@@ -506,11 +509,11 @@
         <div class="p-5 bg-gray-50 border-b border-gray-200 flex gap-4">
           <div class="bg-white p-4 rounded-xl border flex-1">
             <div class="text-xs text-gray-500 font-bold mb-1">총 주문 수량</div>
-            <div class="text-2xl font-extrabold text-#EF9099-700"><span id="order-count">0</span><span class="text-sm text-gray-600 font-medium ml-1">잔</span></div>
+            <div class="text-2xl font-extrabold text-[#EF9099]"><span id="order-count">0</span><span class="text-sm text-gray-600 font-medium ml-1">잔</span></div>
           </div>
           <div class="bg-white p-4 rounded-xl border flex-1">
             <div class="text-xs text-gray-500 font-bold mb-1">예상 결제 금액</div>
-            <div class="text-2xl font-extrabold text-#EF9099-700"><span id="total-amount">0원</span></div>
+            <div class="text-2xl font-extrabold text-[#EF9099]"><span id="total-amount">0원</span></div>
           </div>
         </div>
         <div class="p-5 border-b border-gray-100">
